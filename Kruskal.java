@@ -40,7 +40,14 @@ public class Kruskal {
     // ===================
     // YOUR WORK GOES HERE
     // ===================
-
+    for(Edge e : edges){
+      int u = e.dest().id();
+      int v = e.src().id();
+      if(ds.findRep(u) != ds.findRep(v)){
+        ds.union(u, v);
+        mst.add(e);
+      }
+    }
     return mst;
   }
 
@@ -48,7 +55,7 @@ public class Kruskal {
     int sum = 0;
     for (Edge e : set)
       sum += e.wght();
-    return sum / 2;
+    return sum ;
   }
 
   public static void main(String[] args) throws Exception {

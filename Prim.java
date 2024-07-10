@@ -12,21 +12,31 @@
  * ---------------------------------------------------------------------------------
  */
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.PriorityQueue;
-import java.util.Set;
+ import java.util.HashMap;
+ import java.util.HashSet;
+ import java.util.Map;
+ import java.util.PriorityQueue;
+ import java.util.Set;
+ import java.util.Iterator;
 
 public class Prim {
 
   public static void updateFrontier(Vertex v, //
                                     Map<Vertex, Integer> settled, //
                                     PriorityQueue<Edge> frontier) {
-    for(int i = 0; i < v.numOfEdges(); i++){
-      frontier.add(v.iterator().next());
+
+  
+
+
+  Iterator<Edge> edgeIter = v.iterator();
+  for(int i = 0; i < v.numOfEdges();  i++){
+    Edge e = edgeIter.next();
+      if (!settled.containsKey(e.dest()) && !settled.containsKey(e.src())) {
+      continue;
     }
-    settled.put(v, 0);
+    
+    frontier.add(e);
+    }
   }
 
   public static Set<Edge> runPrim(UG g, Vertex s) {
@@ -36,35 +46,40 @@ public class Prim {
 
     settled.put(s, 0);
     updateFrontier(s, settled, frontier);
-
-    // ===================
-    // YOUR WORK GOES HERE
-    // ===================
-
     while (!frontier.isEmpty()) {
       Edge nextEdge = frontier.poll();
-      Vertex nextVertex = nextEdge.dest();
-    }
-                
-    return mst;
+      Vertex destV = nextEdge.dest();
+      Vertex srcVertex = nextEdge.src();
+      Vertex v = destV;
+      if (settled.containsKey(destV)) {
+        v = srcVertex;
+        if(settled.containsKey(srcVertex)) {
+          continue;
+        }
+      }
+      settled.put(v, 0);
+      mst.add(nextEdge);
+      updateFrontier(v, settled, frontier);
+  }
+  return mst;
   }
 
   public static int setSum(Set<Edge> set) {
     int sum = 0;
     for (Edge e : set)
       sum += e.wght();
-    return sum / 2;
+    return sum ;
   }
 
   public static void main(String[] args) throws Exception {
     String fileName = args[0];
     String startVertexId = args[1];
-
     UG g = new UG(fileName);
     Integer sId = Integer.parseInt(startVertexId);
     Vertex s = g.getVertex(sId);
     if (s != null) {
       Set<Edge> mst = runPrim(g, s);
+      
       if (mst != null) {
         System.out.println(setSum(mst));
       } else {
